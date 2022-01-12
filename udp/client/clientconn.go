@@ -604,7 +604,7 @@ func (cc *ClientConn) Process(datagram []byte) error {
 	}
 	closeConnection := func() {
 		if errClose := cc.Close(); errClose != nil {
-			cc.errors(fmt.Errorf("cannot close connection: %w", err))
+			cc.errors(fmt.Errorf("cannot close connection: %w", errClose))
 		}
 	}
 	req.SetSequence(cc.Sequence())
