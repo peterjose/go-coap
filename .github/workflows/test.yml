@@ -5,9 +5,9 @@ name: Test
 # Controls when the action will run.
 on:
   push:
-  pull_request:
     branches:
       - master
+  pull_request:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -45,12 +45,14 @@ jobs:
       - name: Run a test
         run: go test -v -race -p 1  ./... -coverpkg=./... -covermode=atomic -coverprofile=./coverage.txt
 
+      # Skip this step when running from forked repository (no write privileges)
       - name: Publish the coverage
-        if: startsWith(matrix.os,'ubuntu')
+        if: github.repository_owner == 'plgd-dev' && startsWith(matrix.os,'ubuntu')
         run: bash <(curl -s https://codecov.io/bash)
 
+      # Skip this step when running from forked repository (no access to ${{ secrets }})
       - name: SonarCloud Scan
-        if: startsWith(matrix.os,'ubuntu')
+        if: github.repository_owner == 'plgd-dev' && startsWith(matrix.os,'ubuntu')
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
